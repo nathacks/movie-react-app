@@ -1,74 +1,10 @@
-import { Animated, Dimensions, FlatList, Image, Platform, SafeAreaView, StyleSheet, Text, View, } from 'react-native'
+import { Animated, Image, Platform, SafeAreaView, Text, View, } from 'react-native'
 import { useEffect, useRef, useState } from 'react'
 import { MovieFormatted } from '../models/movie.model.ts'
 import { Rating } from './components/Rating.tsx'
 import { Genres } from './components/Genres.tsx'
 import { useMovie } from '../hooks/api/useMovie.ts';
-import LinearGradient from 'react-native-linear-gradient';
-
-const { width, height } = Dimensions.get('window')
-
-const SPACING = 10
-const ITEM_SIZE = Platform.OS === 'ios' ? width * 0.72 : width * 0.74
-const EMPTY_ITEM_SIZE = (width - ITEM_SIZE) / 2
-const BACKDROP_HEIGHT = height * 0.4
-
-const Backdrop = ({
-                      movies,
-                      scrollX,
-                  }: {
-    movies: MovieFormatted[];
-    scrollX: Animated.Value;
-}) => {
-    return (
-        <View style={{ width, position: 'absolute', height: BACKDROP_HEIGHT }}>
-            <FlatList
-                data={movies.reverse()}
-                keyExtractor={item => item.key + '-backdrop'}
-                removeClippedSubviews={false}
-                contentContainerStyle={{ width, height: BACKDROP_HEIGHT }}
-                renderItem={({ item, index }) => {
-                    if (!item.backdrop) {
-                        return null
-                    }
-                    const translateX = scrollX.interpolate({
-                        inputRange: [(index - 2) * ITEM_SIZE, (index - 1) * ITEM_SIZE],
-                        outputRange: [0, width],
-                        // extrapolate: 'clamp'
-                    })
-                    return (
-                        <Animated.View
-                            removeClippedSubviews={false}
-                            style={{
-                                position: 'absolute',
-                                width: translateX,
-                                height,
-                                overflow: 'hidden',
-                            }}>
-                            <Image
-                                source={{ uri: item.backdrop }}
-                                style={{
-                                    width,
-                                    height: BACKDROP_HEIGHT,
-                                    position: 'absolute',
-                                }}
-                            />
-                        </Animated.View>
-                    )
-                }}
-            />
-            <LinearGradient
-                colors={['rgba(0, 0, 0, 0)', 'white']}
-                style={{
-                    height: BACKDROP_HEIGHT,
-                    width,
-                    position: 'absolute',
-                    bottom: 0,
-                }}
-            />
-        </View>
-    )
-}
+import { EMPTY_ITEM_SIZE, ITEM_SIZE, SPACING } from '../utils/movie-dimensions.ts';
 
 export function Main() {
     const [movies, setMovies] = useState<MovieFormatted[]>([])
@@ -80,16 +16,16 @@ export function Main() {
         if (movies.length === 0) {
             getMovies().consume({
                 result: ({ movies, page }) => {
-                    setMovies([{ key: 'empty-left' }, ...movies, { key: 'empty-right' }])
+                    setMovies(movies)
                 },
             })
         }
     }, [movies])
 
     return (
-        <View style={[styles.container, StyleSheet.absoluteFill]}>
-            <Backdrop movies={movies} scrollX={scrollX}/>
-            <SafeAreaView style={{ flex: 1 }}>
+        <View className={'flex-1'}>
+            {/*<Backdrop movies={movies} scrollX={scrollX}/>*/}
+            <SafeAreaView className={'flex-1'}>
                 <Animated.FlatList
                     showsHorizontalScrollIndicator={false}
                     data={movies}
@@ -121,7 +57,7 @@ export function Main() {
                         })
 
                         return (
-                            <View style={{ width: ITEM_SIZE, paddingTop: 56 }}>
+                            <View style={{ width: ITEM_SIZE }} className={'pt-14'}>
                                 <Animated.View
                                     style={{
                                         marginHorizontal: SPACING,
@@ -133,7 +69,14 @@ export function Main() {
                                     }}>
                                     <Image
                                         source={{ uri: item.poster }}
-                                        style={styles.posterImage}
+                                        style={{
+                                            width: '100%',
+                                            height: ITEM_SIZE * 1.2,
+                                            resizeMode: 'cover',
+                                            borderRadius: 24,
+                                            margin: 0,
+                                            marginBottom: 10,
+                                        }}
                                     />
                                     <Text style={{ fontSize: 24 }} numberOfLines={1}>
                                         {item.title}
@@ -152,28 +95,3 @@ export function Main() {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    loadingContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    container: {
-        flex: 1,
-    },
-    paragraph: {
-        margin: 24,
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    posterImage: {
-        width: '100%',
-        height: ITEM_SIZE * 1.2,
-        resizeMode: 'cover',
-        borderRadius: 24,
-        margin: 0,
-        marginBottom: 10,
-    },
-})
