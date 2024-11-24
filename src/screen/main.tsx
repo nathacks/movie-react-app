@@ -1,10 +1,10 @@
 import { Animated, Dimensions, FlatList, Image, Platform, SafeAreaView, StyleSheet, Text, View, } from 'react-native'
 import { useEffect, useRef, useState } from 'react'
 import { MovieFormatted } from '../models/movie.model.ts'
-import LinearGradient from 'react-native-linear-gradient'
-import { useMovie } from '../hooks/api/useMovie.ts'
 import { Rating } from './components/Rating.tsx'
 import { Genres } from './components/Genres.tsx'
+import { useMovie } from '../hooks/api/useMovie.ts';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get('window')
 

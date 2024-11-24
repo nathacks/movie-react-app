@@ -1,7 +1,7 @@
-import {DrinoInstance} from 'drino';
-import {useDrino} from './common/drino.hook';
-import {MovieResponse} from '../../models/movie.model';
-import {API_KEY} from '../../../app.config';
+import { DrinoInstance } from 'drino';
+import { MovieResponse } from '../../models/movie.model';
+import { API_KEY } from '../../../app.config';
+import { useDrino } from './common/drino.hook.ts';
 
 const genres: Record<number, string> = {
     12: 'Adventure',
@@ -35,7 +35,7 @@ export function useMovie() {
 
     return {
         getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`)
-            .transform(({results, page}) => {
+            .transform(({ results, page }) => {
                 const movies = results.map(({
                                                 id,
                                                 original_title,
