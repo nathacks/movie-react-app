@@ -1,4 +1,4 @@
-import { Main } from './screen/main.tsx';
+import { Main } from './screen/Main.tsx';
 import '../global.css'
 
 export function App() {

@@ -1,5 +1,5 @@
 import drino from 'drino';
-import { BACKEND_URL } from '../../../../app.config';
+import { API_KEY, BACKEND_URL } from '../../../../app.config';
 
 interface DrinoHookConfig {
     prefix?: string;
@@ -15,6 +15,8 @@ export function useDrino(config: DrinoHookConfig = {}) {
         baseUrl: BACKEND_URL,
         requestsConfig: {
             prefix: prefix ?? '/api',
+            queryParams: { api_key: API_KEY, language: 'fr-FR', include_adult: false }
         },
+
     });
 }

@@ -1,25 +1,27 @@
-import * as React from 'react';
+import React from 'react';
 import { Text, View } from 'react-native';
 import { Star } from 'lucide-react-native';
 
-export function Rating({ rating }: { rating: number }) {
-    const filledStars = Math.floor(rating / 2);
-    const maxStars = Array(5 - filledStars).fill('staro');
-    const r = [...Array(filledStars).fill('star'), ...maxStars];
+type RatingProps = {
+    rating: number;
+};
 
-    const formatNumber = (number: number) => {
-        const integerPart = Math.trunc(number)
-        const decimalPart = Math.trunc((number - integerPart) * 10) / 10
-        return integerPart + decimalPart
-    }
+export function Rating({ rating }: RatingProps) {
+    const filledStars = Math.round(rating / 2);
+    const emptyStars = 5 - filledStars;
+
+    const formatNumber = (value: number) => value.toFixed(1);
 
     return (
-        <View className={'flex-row gap-2'}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Text>{formatNumber(rating)}</Text>
-            <View className={'flex-row'}>
-                {r.map((type, index) => {
-                    return <Star size={16} key={index} color={'orange'} fill={type === 'star' ? 'orange' : 'white'}/>
-                })}
+            <View style={{ flexDirection: 'row' }}>
+                {Array.from({ length: filledStars }, (_, index) => (
+                    <Star key={`filled-${index}`} size={16} color="orange" fill="orange" />
+                ))}
+                {Array.from({ length: emptyStars }, (_, index) => (
+                    <Star key={`empty-${index}`} size={16} color="orange" fill="white" />
+                ))}
             </View>
         </View>
     );

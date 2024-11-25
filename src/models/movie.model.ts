@@ -7,7 +7,7 @@ export interface Movie {
     original_title: string;
     overview: string;
     popularity: number;
-    poster_path: string | null;
+    poster_path?: string;
     release_date: string;
     title: string;
     video: boolean;
@@ -16,7 +16,7 @@ export interface Movie {
 }
 
 export interface MovieResponse {
-    page: number;
+    page?: number;
     results: Movie[];
 }
 

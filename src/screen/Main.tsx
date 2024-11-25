@@ -1,21 +1,25 @@
 import { Platform, SafeAreaView, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import { MovieFormatted } from '../models/movie.model.ts';
+import { MovieResponse } from '../models/movie.model.ts';
 import { useMovie } from '../hooks/api/useMovie.ts';
 import { GAP, GAP_ITEM } from '../utils/movie-dimensions.ts';
 import Animated, { useAnimatedScrollHandler, useSharedValue, } from 'react-native-reanimated';
 import { MovieItem } from './components/MovieItem.tsx';
 import { Backdrop } from './components/Backdrop.tsx';
-import { dataMovies } from '../data-movies.ts'
+import { LanguageButton } from './components/LanguageButton.tsx';
 
 export function Main() {
-    const [movies, setMovies] = useState<MovieFormatted[]>([]);
+    const [movies, setMovies] = useState<MovieResponse>({ results: [] });
     const scrollX = useSharedValue(0);
 
     const { getMovies } = useMovie();
 
     useEffect(() => {
-        setMovies(dataMovies);
+        getMovies().consume({
+            result: (movies) => {
+                setMovies(movies);
+            },
+        })
     }, []);
 
     const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -24,12 +28,13 @@ export function Main() {
 
     return (
         <View className={'flex-1 bg-sand-1'}>
-            <Backdrop movies={movies} scrollX={scrollX} />
+            <Backdrop movies={movies.results} scrollX={scrollX} />
+            <LanguageButton />
             <SafeAreaView className={'flex-1'}>
                 <Animated.FlatList
                     showsHorizontalScrollIndicator={false}
-                    data={movies}
-                    keyExtractor={(item) => item.key}
+                    data={movies.results}
+                    keyExtractor={item => `${item.id}.movie`}
                     horizontal
                     contentContainerStyle={{
                         gap: GAP
@@ -40,7 +45,7 @@ export function Main() {
                     onScroll={scrollHandler}
                     scrollEventThrottle={16}
                     renderItem={({ item, index }) => <MovieItem item={item} index={index} scrollX={scrollX}
-                                                                moviesLengthMax={movies.length - 1} />}
+                                                                moviesLengthMax={movies.results.length - 1} />}
                 />
             </SafeAreaView>
         </View>

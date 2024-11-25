@@ -1,8 +1,9 @@
 import { Dimensions, FlatList, Image, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { MovieFormatted } from '../../models/movie.model.ts';
-import { BACKDROP_HEIGHT, GAP_ITEM } from '../../utils/movie-dimensions.ts';
+import { Movie } from '../../models/movie.model.ts';
+import { GAP_ITEM, HEIGHT_BACKDROP } from '../../utils/movie-dimensions.ts';
 import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { getBackdropPath } from '../../utils/url-image.ts';
 
 const { width, height } = Dimensions.get('window')
 
@@ -10,12 +11,12 @@ export function Backdrop({
                              movies,
                              scrollX,
                          }: {
-    movies: MovieFormatted[];
+    movies: Movie[];
     scrollX: SharedValue<number>;
 }) {
 
-    const BackdropItem = ({ item, index }: { item: MovieFormatted, index: number }) => {
-        if (!item.backdrop) {
+    const BackdropItem = ({ item, index }: { item: Movie, index: number }) => {
+        if (!item.backdrop_path) {
             return null;
         }
 
@@ -50,10 +51,10 @@ export function Backdrop({
             >
                 <Image
                     className={'absolute'}
-                    source={{ uri: item.backdrop }}
+                    source={{ uri: getBackdropPath(item.backdrop_path) }}
                     style={{
                         width,
-                        height: BACKDROP_HEIGHT,
+                        height: HEIGHT_BACKDROP,
                     }}
                 />
             </Animated.View>
@@ -61,24 +62,24 @@ export function Backdrop({
     }
 
     return (
-        <View className={'absolute w-full h-full'} style={{ width, height: BACKDROP_HEIGHT }}>
+        <View className={'absolute w-full h-full'} style={{ width, height: HEIGHT_BACKDROP }}>
             <FlatList
                 className={'flex-1'}
-                data={movies.reverse()}
-                keyExtractor={item => item.key + '-backdrop'}
+                data={movies}
+                keyExtractor={item => `${item.id}.backdrop`}
                 removeClippedSubviews={false}
-                contentContainerStyle={{ width, height: BACKDROP_HEIGHT }}
+                contentContainerStyle={{ width, height: HEIGHT_BACKDROP }}
                 renderItem={({ item, index }) => {
-                    return <BackdropItem item={item} index={index}/>
+                    return <BackdropItem item={item} index={index} />
                 }}
             />
             <LinearGradient
                 colors={['rgba(0, 0, 0, 0)', 'white']}
                 style={{
-                    height: BACKDROP_HEIGHT,
-                    width,
                     position: 'absolute',
+                    height: HEIGHT_BACKDROP,
                     bottom: 0,
+                    width,
                 }}
             />
         </View>

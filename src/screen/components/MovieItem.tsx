@@ -1,12 +1,12 @@
 import { Image, Text, View } from 'react-native';
-import { EMPTY_ITEM_SIZE, GAP_ITEM, ITEM_SIZE } from '../../utils/movie-dimensions.ts';
+import { GAP_ITEM, MOVIE_SIZE, NO_MOVIE_SIZE } from '../../utils/movie-dimensions.ts';
 import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Rating } from './Rating.tsx';
-import { Genres } from './Genres.tsx';
-import { MovieFormatted } from '../../models/movie.model.ts';
+import { Movie } from '../../models/movie.model.ts';
+import { getImagePath } from '../../utils/url-image.ts';
 
 interface MovieItemProps {
-    item: MovieFormatted
+    item: Movie
     index: number
     scrollX: SharedValue<number>;
     moviesLengthMax: number;
@@ -37,22 +37,22 @@ export function MovieItem({ item, index, scrollX, moviesLengthMax }: MovieItemPr
             <Animated.View
                 className={'mt-14 p-5 bg-sand-1 rounded-t-3xl'}
                 style={[{
-                    marginLeft: index === 0 ? EMPTY_ITEM_SIZE : 0,
-                    marginRight: index === moviesLengthMax ? EMPTY_ITEM_SIZE : 0,
-                    width: ITEM_SIZE,
+                    marginLeft: index === 0 ? NO_MOVIE_SIZE : 0,
+                    marginRight: index === moviesLengthMax ? NO_MOVIE_SIZE : 0,
+                    width: MOVIE_SIZE,
                 }, animatedStyle]}>
                 <Image
-                    source={{ uri: item.poster }}
+                    source={{ uri: getImagePath(item.poster_path) }}
                     className={'rounded-2xl w-full object-cover mb-5'}
                     style={{
-                        height: ITEM_SIZE * 1.2,
+                        height: MOVIE_SIZE * 1.2,
                     }}
                 />
                 <View className={'items-center gap-3'}>
                     <Text className={'text-center font-semibold text-2xl'}>{item.title}</Text>
-                    <Rating rating={item.rating} />
-                    <Genres genres={item.genres} />
-                    <Text numberOfLines={5}>{item.description}</Text>
+                    <Rating rating={item.vote_average} />
+                    {/*<Genres genres={item.genres} />*/}
+                    <Text numberOfLines={5}>{item.overview}</Text>
                 </View>
             </Animated.View>
         </View>

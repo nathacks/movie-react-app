@@ -1,6 +1,5 @@
 import { DrinoInstance } from 'drino';
 import { MovieResponse } from '../../models/movie.model';
-import { API_KEY } from '../../../app.config';
 import { useDrino } from './common/drino.hook.ts';
 
 const genres: Record<number, string> = {
@@ -28,38 +27,9 @@ const genres: Record<number, string> = {
 export function useMovie() {
     const client: DrinoInstance = useDrino();
 
-    const getImagePath = (path: string | null) =>
-        `https://image.tmdb.org/t/p/w440_and_h660_face${path}`;
-    const getBackdropPath = (path: string | null) =>
-        `https://image.tmdb.org/t/p/w370_and_h556_multi_faces${path}`;
 
     return {
-        getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc&language=fr-FR`)
-            .transform(({ results, page }) => {
-                const movies = results.map(({
-                                                id,
-                                                original_title,
-                                                poster_path,
-                                                backdrop_path,
-                                                vote_average,
-                                                overview,
-                                                release_date,
-                                                genre_ids,
-                                            }) => ({
-                    key: String(id),
-                    title: original_title,
-                    poster: getImagePath(poster_path),
-                    backdrop: getBackdropPath(backdrop_path),
-                    rating: vote_average,
-                    description: overview,
-                    releaseDate: release_date,
-                    genres: genre_ids.map((genre: number) => genres[genre]),
-                }));
-
-                return {
-                    movies,
-                    page,
-                };
-            }),
+        getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc`),
+        getGenres: () => client.get(`https://api.themoviedb.org/3/genre/movie/list`)
     };
 }
