@@ -1,97 +1,48 @@
-import { Animated, Image, Platform, SafeAreaView, Text, View, } from 'react-native'
-import { useEffect, useRef, useState } from 'react'
-import { MovieFormatted } from '../models/movie.model.ts'
-import { Rating } from './components/Rating.tsx'
-import { Genres } from './components/Genres.tsx'
+import { Platform, SafeAreaView, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { MovieFormatted } from '../models/movie.model.ts';
 import { useMovie } from '../hooks/api/useMovie.ts';
-import { EMPTY_ITEM_SIZE, ITEM_SIZE, SPACING } from '../utils/movie-dimensions.ts';
+import { GAP, GAP_ITEM } from '../utils/movie-dimensions.ts';
+import Animated, { useAnimatedScrollHandler, useSharedValue, } from 'react-native-reanimated';
+import { MovieItem } from './components/MovieItem.tsx';
+import { Backdrop } from './components/Backdrop.tsx';
+import { dataMovies } from '../data-movies.ts'
 
 export function Main() {
-    const [movies, setMovies] = useState<MovieFormatted[]>([])
-    const scrollX = useRef(new Animated.Value(0)).current
+    const [movies, setMovies] = useState<MovieFormatted[]>([]);
+    const scrollX = useSharedValue(0);
 
-    const { getMovies } = useMovie()
+    const { getMovies } = useMovie();
 
     useEffect(() => {
-        if (movies.length === 0) {
-            getMovies().consume({
-                result: ({ movies, page }) => {
-                    setMovies(movies)
-                },
-            })
-        }
-    }, [movies])
+        setMovies(dataMovies);
+    }, []);
+
+    const scrollHandler = useAnimatedScrollHandler((event) => {
+        scrollX.value = event.contentOffset.x;
+    });
 
     return (
-        <View className={'flex-1'}>
-            {/*<Backdrop movies={movies} scrollX={scrollX}/>*/}
+        <View className={'flex-1 bg-sand-1'}>
+            <Backdrop movies={movies} scrollX={scrollX} />
             <SafeAreaView className={'flex-1'}>
                 <Animated.FlatList
                     showsHorizontalScrollIndicator={false}
                     data={movies}
-                    keyExtractor={item => item.key}
+                    keyExtractor={(item) => item.key}
                     horizontal
+                    contentContainerStyle={{
+                        gap: GAP
+                    }}
                     decelerationRate={Platform.OS === 'ios' ? 0 : 0.98}
                     renderToHardwareTextureAndroid
-                    snapToInterval={ITEM_SIZE}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                        { useNativeDriver: false },
-                    )}
+                    snapToInterval={GAP_ITEM}
+                    onScroll={scrollHandler}
                     scrollEventThrottle={16}
-                    renderItem={({ item, index }) => {
-                        if (!item.poster) {
-                            return <View style={{ width: EMPTY_ITEM_SIZE }}/>
-                        }
-
-                        const inputRange = [
-                            (index - 2) * ITEM_SIZE,
-                            (index - 1) * ITEM_SIZE,
-                            index * ITEM_SIZE,
-                        ]
-
-                        const translateY = scrollX.interpolate({
-                            inputRange,
-                            outputRange: [0, -50, 0],
-                            extrapolate: 'clamp',
-                        })
-
-                        return (
-                            <View style={{ width: ITEM_SIZE }} className={'pt-14'}>
-                                <Animated.View
-                                    style={{
-                                        marginHorizontal: SPACING,
-                                        padding: SPACING * 1.5,
-                                        alignItems: 'center',
-                                        transform: [{ translateY }],
-                                        backgroundColor: 'white',
-                                        borderRadius: 34,
-                                    }}>
-                                    <Image
-                                        source={{ uri: item.poster }}
-                                        style={{
-                                            width: '100%',
-                                            height: ITEM_SIZE * 1.2,
-                                            resizeMode: 'cover',
-                                            borderRadius: 24,
-                                            margin: 0,
-                                            marginBottom: 10,
-                                        }}
-                                    />
-                                    <Text style={{ fontSize: 24 }} numberOfLines={1}>
-                                        {item.title}
-                                    </Text>
-                                    <Rating rating={item.rating}/>
-                                    <Genres genres={item.genres}/>
-                                    <Text style={{ fontSize: 12 }} numberOfLines={3}>
-                                        {item.description}
-                                    </Text>
-                                </Animated.View>
-                            </View>
-                        )
-                    }}
+                    renderItem={({ item, index }) => <MovieItem item={item} index={index} scrollX={scrollX}
+                                                                moviesLengthMax={movies.length - 1} />}
                 />
             </SafeAreaView>
         </View>
-    )
+    );
 }

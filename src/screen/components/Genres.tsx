@@ -1,38 +1,16 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 export function Genres({ genres }: { genres: string[] }) {
     return (
-        <View style={styles.genres}>
-            {genres.map((genre, i) => {
+        <View className={'flex-row flex-wrap items-center justify-center gap-2'}>
+            {genres.map((genre, index) => {
                 return (
-                    <View key={genre} style={styles.genre}>
-                        <Text style={styles.genreText}>{genre}</Text>
+                    <View className={'border border-gray-9 rounded-full px-2'} key={index}>
+                        <Text className={'text-xs text-gray-11'}>{genre}</Text>
                     </View>
                 );
             })}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    genres: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginVertical: 4,
-    },
-    genre: {
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderWidth: 1,
-        borderRadius: 14,
-        borderColor: '#ccc',
-        marginRight: 4,
-        marginBottom: 4,
-    },
-    genreText: {
-        fontSize: 9,
-        opacity: 0.4
-    }
-});

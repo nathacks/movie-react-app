@@ -34,7 +34,7 @@ export function useMovie() {
         `https://image.tmdb.org/t/p/w370_and_h556_multi_faces${path}`;
 
     return {
-        getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`)
+        getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc&language=fr-FR`)
             .transform(({ results, page }) => {
                 const movies = results.map(({
                                                 id,

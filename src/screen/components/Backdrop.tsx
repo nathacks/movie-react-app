@@ -1,7 +1,8 @@
-import { Animated, Dimensions, FlatList, Image, View } from 'react-native';
+import { Dimensions, FlatList, Image, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { MovieFormatted } from '../../models/movie.model.ts';
-import { BACKDROP_HEIGHT, ITEM_SIZE } from '../../utils/movie-dimensions.ts';
+import { BACKDROP_HEIGHT, GAP_ITEM } from '../../utils/movie-dimensions.ts';
+import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window')
 
@@ -10,43 +11,65 @@ export function Backdrop({
                              scrollX,
                          }: {
     movies: MovieFormatted[];
-    scrollX: Animated.Value;
+    scrollX: SharedValue<number>;
 }) {
+
+    const BackdropItem = ({ item, index }: { item: MovieFormatted, index: number }) => {
+        if (!item.backdrop) {
+            return null;
+        }
+
+        const animatedStyle = useAnimatedStyle(() => {
+            const inputRange = [
+                (index - 1) * GAP_ITEM,
+                index * GAP_ITEM,
+                (index + 1) * GAP_ITEM,
+            ];
+
+            const opacity = interpolate(
+                scrollX.value,
+                inputRange,
+                [0, 1, 0]
+            );
+
+            return {
+                opacity,
+            };
+        });
+
+        return (
+            <Animated.View
+                className={'absolute'}
+                style={[
+                    animatedStyle,
+                    {
+                        height,
+                        width,
+                    },
+                ]}
+            >
+                <Image
+                    className={'absolute'}
+                    source={{ uri: item.backdrop }}
+                    style={{
+                        width,
+                        height: BACKDROP_HEIGHT,
+                    }}
+                />
+            </Animated.View>
+        );
+    }
+
     return (
-        <View style={{ width, position: 'absolute', height: BACKDROP_HEIGHT }}>
+        <View className={'absolute w-full h-full'} style={{ width, height: BACKDROP_HEIGHT }}>
             <FlatList
+                className={'flex-1'}
                 data={movies.reverse()}
                 keyExtractor={item => item.key + '-backdrop'}
                 removeClippedSubviews={false}
                 contentContainerStyle={{ width, height: BACKDROP_HEIGHT }}
                 renderItem={({ item, index }) => {
-                    if (!item.backdrop) {
-                        return null
-                    }
-                    const translateX = scrollX.interpolate({
-                        inputRange: [(index - 2) * ITEM_SIZE, (index - 1) * ITEM_SIZE],
-                        outputRange: [0, width],
-                        // extrapolate: 'clamp'
-                    })
-                    return (
-                        <Animated.View
-                            removeClippedSubviews={false}
-                            style={{
-                                position: 'absolute',
-                                width: translateX,
-                                height,
-                                overflow: 'hidden',
-                            }}>
-                            <Image
-                                source={{ uri: item.backdrop }}
-                                style={{
-                                    width,
-                                    height: BACKDROP_HEIGHT,
-                                    position: 'absolute',
-                                }}
-                            />
-                        </Animated.View>
-                    )
+                    return <BackdropItem item={item} index={index}/>
                 }}
             />
             <LinearGradient
