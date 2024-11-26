@@ -1,5 +1,4 @@
 import { View } from 'react-native';
-import { LanguageButton } from './LanguageButton.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CategorieButton } from './CategorieButton.tsx';
 import { SearchBar } from './SearchBar.tsx';
@@ -9,10 +8,9 @@ export function Header() {
     const { top } = useSafeAreaInsets()
 
     return (
-        <View className={'flex-row mx-3 h-12 justify-between'} style={[StyleShadow['3'], { marginTop: top }]}>
-            <CategorieButton/>
-            <SearchBar/>
-            <LanguageButton/>
+        <View className={'flex-row h-12 gap-5 mx-5'} style={[StyleShadow['3'], { marginTop: top }]}>
+            <CategorieButton />
+            <SearchBar />
         </View>
     )
 }

@@ -1,9 +1,10 @@
-import { Dimensions, FlatList, Image, View } from 'react-native';
+import { Dimensions, FlatList, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Movies } from '../../models/movie.model.ts';
 import { GAP_ITEM, HEIGHT_BACKDROP } from '../../utils/movie-dimensions.ts';
 import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { getBackdropPath } from '../../utils/url-image.ts';
+import FastImage from 'react-native-fast-image';
 
 const { width, height } = Dimensions.get('window')
 
@@ -49,13 +50,15 @@ export function Backdrop({
                     },
                 ]}
             >
-                <Image
-                    className={'absolute'}
-                    source={{ uri: getBackdropPath(item.backdrop_path) }}
-                    style={{
-                        width,
+                <FastImage
+                    style={[{
                         height: HEIGHT_BACKDROP,
+                    }]}
+                    source={{
+                        uri: getBackdropPath(item.backdrop_path),
+                        priority: FastImage.priority.normal,
                     }}
+                    resizeMode={FastImage.resizeMode.cover}
                 />
             </Animated.View>
         );
@@ -64,7 +67,6 @@ export function Backdrop({
     return (
         <View className={'absolute w-full h-full'} style={{ width, height: HEIGHT_BACKDROP }}>
             <FlatList
-                className={'flex-1'}
                 data={movies}
                 keyExtractor={item => `${item.id}.backdrop`}
                 removeClippedSubviews={false}
@@ -79,7 +81,6 @@ export function Backdrop({
                 style={{
                     position: 'absolute',
                     height: HEIGHT_BACKDROP,
-                    bottom: 0,
                     width,
                 }}
             />

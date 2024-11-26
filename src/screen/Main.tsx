@@ -1,14 +1,15 @@
 import { Platform, View } from 'react-native';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import { MoviePage } from '../models/movie.model';
+import { Movies } from '../models/movie.model';
 import { useMovie } from '../hooks/api/useMovie';
-import { GAP, GAP_ITEM } from '../utils/movie-dimensions';
+import { GAP, GAP_ITEM, MAX_MOVIES, MOVIE_SIZE } from '../utils/movie-dimensions';
 import { MovieItem } from './components/MovieItem';
-import { Backdrop } from './components/Backdrop';
 import { Header } from './components/Header';
 import { useLanguageStore } from '../store/languageStore';
 import { useMoviesStore } from '../store/moviesStore';
+import { ListRenderItem, ViewToken } from '@react-native/virtualized-lists/Lists/VirtualizedList';
+import { Backdrop } from './components/Backdrop.tsx';
 
 export function Main() {
     const { moviePages, setMoviePages } = useMoviesStore();
@@ -16,9 +17,11 @@ export function Main() {
     const scrollX = useSharedValue(0);
     const { getMovies } = useMovie();
 
+    const moviesFlat = moviePages.flatMap((page) => page.results);
+
     const getMoviesPage = (pageNumber: number) => {
         getMovies(pageNumber).consume({
-            result: (moviesResponse: MoviePage) => {
+            result: (moviesResponse) => {
                 setMoviePages(moviesResponse);
             },
         });
@@ -32,46 +35,53 @@ export function Main() {
         scrollX.value = event.contentOffset.x;
     });
 
-    const onViewableItemsChanged = ({ viewableItems }: { viewableItems: any }) => {
-        const lastIndex = moviesFlat.length - 1;
-        const secondToLastIndex = lastIndex - 2;
+    const onViewableItemsChanged = ({ viewableItems }: { viewableItems: Array<ViewToken<Movies>> }) => {
+        const currentIndex = viewableItems[0]?.index || 0;
+        const moviesFlatCount = moviesFlat.length;
 
-        if (viewableItems.some((item: any) => item.index === secondToLastIndex)) {
-            const nextPage = moviePages[moviePages.length - 1]?.page + 1;
-            if (!moviePages.some((page) => page.page === nextPage)) {
-                getMoviesPage(nextPage);
-            }
+        const numberMovieBeforeTriger = 5
+
+        const nextPage = moviePages.length + 1;
+
+        if (currentIndex >= moviesFlat.length - numberMovieBeforeTriger && nextPage && moviesFlatCount < MAX_MOVIES) {
+            getMoviesPage(nextPage);
         }
     };
 
-    const moviesFlat = moviePages.flatMap((page) => page.results);
+    const renderItem: ListRenderItem<Movies> = useCallback(({ item: movie, index }) => (
+        <MovieItem
+            movie={movie}
+            index={index}
+            scrollX={scrollX}
+            moviesLengthMax={moviesFlat.length - 1}
+        />
+    ), [moviesFlat]);
 
     return (
         <View className={'flex-1 bg-sand-1'}>
-            <Backdrop movies={moviesFlat} scrollX={scrollX}/>
-            <Header/>
+            <Backdrop movies={moviesFlat} scrollX={scrollX} />
+            <Header />
             <Animated.FlatList
-                data={moviePages.flatMap((page) => page.results)}
+                data={moviesFlat}
                 keyExtractor={(item) => `${item.id}.movies`}
                 horizontal
                 contentContainerStyle={{ gap: GAP }}
                 decelerationRate={Platform.OS === 'ios' ? 0 : 0.98}
-                renderToHardwareTextureAndroid
+                snapToInterval={GAP_ITEM}
                 onScroll={scrollHandler}
                 scrollEventThrottle={16}
-                snapToInterval={GAP_ITEM}
+                initialNumToRender={5}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews
+                getItemLayout={(_, index) => ({
+                    length: MOVIE_SIZE,
+                    offset: GAP_ITEM * index,
+                    index,
+                })}
                 onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
-                renderItem={({ item: movie, index }) => (
-                    <MovieItem
-                        movie={movie}
-                        index={index}
-                        scrollX={scrollX}
-                        moviesLengthMax={moviePages.flatMap((page) => page.results).length - 1}
-                    />
-                )}
+                renderItem={renderItem}
             />
-
         </View>
     );
 }

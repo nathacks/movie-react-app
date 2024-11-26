@@ -18,7 +18,7 @@ export function useDrino(config: DrinoHookConfig = {}) {
         baseUrl: BACKEND_URL,
         requestsConfig: {
             prefix: prefix ?? '/api',
-            queryParams: { api_key: API_KEY, language: selectedLocale, include_adult: false }
+            queryParams: { api_key: API_KEY, language: selectedLocale }
         },
 
     });

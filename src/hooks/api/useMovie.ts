@@ -27,9 +27,9 @@ const genres: Record<number, string> = {
 export function useMovie() {
     const client: DrinoInstance = useDrino();
 
-
     return {
-        getMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/discover/movie?page=${numberPage}&sort_by=popularity.desc`),
-        getGenres: () => client.get(`https://api.themoviedb.org/3/genre/movie/list`)
+        getMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/discover/movie?page=${numberPage}&sort_by=popularity.desc&include_adult=false`),
+        getGenres: () => client.get(`https://api.themoviedb.org/3/genre/movie/list`),
+        getSearchMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/search/movie?page=${numberPage}&query=marvel`)
     };
 }

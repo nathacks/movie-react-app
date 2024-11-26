@@ -7,3 +7,4 @@ export const MOVIE_SIZE = Platform.OS === 'ios' ? width * 0.65 : width * 0.68
 export const NO_MOVIE_SIZE = (width - MOVIE_SIZE) / 2
 export const HEIGHT_BACKDROP = height * 0.6
 export const GAP_ITEM = MOVIE_SIZE + GAP
+export const MAX_MOVIES = 100;
