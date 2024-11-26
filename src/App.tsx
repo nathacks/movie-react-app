@@ -1,6 +1,10 @@
 import { Main } from './screen/Main.tsx';
-import '../global.css'
+import { Provider } from './providers/Provider.tsx';
 
 export function App() {
-    return <Main/>;
+    return (
+        <Provider>
+            <Main/>
+        </Provider>
+    )
 }

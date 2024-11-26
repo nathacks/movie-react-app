@@ -3,19 +3,23 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "types": "tsc --noEmit"
   },
   "dependencies": {
     "drino": "^1.9.1",
+    "i18next": "^24.0.2",
     "lucide-react-native": "^0.460.0",
     "nativewind": "^4.1.23",
     "react": "18.3.1",
+    "react-i18next": "^15.1.1",
     "react-native": "0.76.3",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-localize": "^3.3.0",
     "react-native-mmkv": "^3.1.0",
     "react-native-reanimated": "^3.16.2",
     "react-native-safe-area-context": "^4.14.0",

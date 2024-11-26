@@ -1,5 +1,5 @@
 import { DrinoInstance } from 'drino';
-import { MovieResponse } from '../../models/movie.model';
+import { MoviePage } from '../../models/movie.model';
 import { useDrino } from './common/drino.hook.ts';
 
 const genres: Record<number, string> = {
@@ -29,7 +29,7 @@ export function useMovie() {
 
 
     return {
-        getMovies: () => client.get<MovieResponse>(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc`),
+        getMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/discover/movie?page=${numberPage}&sort_by=popularity.desc`),
         getGenres: () => client.get(`https://api.themoviedb.org/3/genre/movie/list`)
     };
 }
