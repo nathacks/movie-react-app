@@ -1,6 +1,6 @@
 import { Dimensions, FlatList, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Movies } from '../../models/movie.model.ts';
+import { Movie } from '../../models/tmdb.model.ts';
 import { GAP_ITEM, HEIGHT_BACKDROP } from '../../utils/movie-dimensions.ts';
 import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { getBackdropPath } from '../../utils/url-image.ts';
@@ -12,11 +12,11 @@ export function Backdrop({
                              movies,
                              scrollX,
                          }: {
-    movies: Movies[];
+    movies: Movie[];
     scrollX: SharedValue<number>;
 }) {
 
-    const BackdropItem = ({ item, index }: { item: Movies, index: number }) => {
+    const BackdropItem = ({ item, index }: { item: Movie, index: number }) => {
         if (!item.backdrop_path) {
             return null;
         }

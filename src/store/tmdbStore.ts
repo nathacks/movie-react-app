@@ -1,18 +1,26 @@
 import { create } from 'zustand';
-import { MoviePage } from '../models/movie.model';
+import { Genre, Page } from '../models/tmdb.model.ts';
 import { MAX_MOVIES } from '../utils/movie-dimensions.ts';
 
 interface MoviesStoreSlice {
-    moviePages: MoviePage[];
-    setMoviePages: (newPage: MoviePage) => void;
-    clearMoviePages: () => void;
+    pages: Page[];
+    setMoviePages: (newMoviePage: Page) => void;
+    clearPages: () => void;
+    genresMovie: Genre[]
+    setGenresMovie: (genresMovie: Genre[]) => void;
+    replaceAllPages: (moviePage: Page) => void;
 }
 
-export const useMoviesStore = create<MoviesStoreSlice>((set, get) => ({
-    moviePages: [],
+export const useTmdbStore = create<MoviesStoreSlice>((set, get) => ({
+    pages: [],
+    genresMovie: [],
+
+    setGenresMovie: (genresMovie) => {
+        set({ genresMovie })
+    },
 
     setMoviePages: (newPage) => {
-        const existingPages = get().moviePages;
+        const existingPages = get().pages;
         const existingMovies = existingPages.flatMap((page) => page.results);
 
         const totalMovies = existingMovies.length + newPage.results.length;
@@ -31,10 +39,14 @@ export const useMoviesStore = create<MoviesStoreSlice>((set, get) => ({
 
         const updatedPages = [...existingPages, filteredPage];
 
-        set({ moviePages: updatedPages });
+        set({ pages: updatedPages });
     },
 
-    clearMoviePages: () => {
-        set({ moviePages: [] });
+    replaceAllPages: (moviePage) => {
+        set({ pages: [moviePage] });
+    },
+
+    clearPages: () => {
+        set({ pages: [] });
     },
 }));

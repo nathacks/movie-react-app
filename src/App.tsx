@@ -4,7 +4,8 @@ import { Provider } from './providers/Provider.tsx';
 export function App() {
     return (
         <Provider>
-            <Main/>
+            {/*<Header />*/}
+            <Main />
         </Provider>
     )
 }

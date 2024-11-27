@@ -1,5 +1,5 @@
 import { DrinoInstance } from 'drino';
-import { MoviePage } from '../../models/movie.model';
+import { GenresResponse, Page } from '../../models/tmdb.model.ts';
 import { useDrino } from './common/drino.hook.ts';
 
 const genres: Record<number, string> = {
@@ -28,8 +28,8 @@ export function useMovie() {
     const client: DrinoInstance = useDrino();
 
     return {
-        getMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/discover/movie?page=${numberPage}&sort_by=popularity.desc&include_adult=false`),
-        getGenres: () => client.get(`https://api.themoviedb.org/3/genre/movie/list`),
-        getSearchMovies: (numberPage: number) => client.get<MoviePage>(`https://api.themoviedb.org/3/search/movie?page=${numberPage}&query=marvel`)
+        getMovies: (numberPage: number) => client.get<Page>(`https://api.themoviedb.org/3/discover/movie?page=${numberPage}&sort_by=popularity.desc&include_adult=false`),
+        getGenres: () => client.get<GenresResponse>(`https://api.themoviedb.org/3/genre/movie/list`),
+        getSearchMovies: (numberPage: number) => client.get<Page>(`https://api.themoviedb.org/3/search/movie?page=${numberPage}&query=marvel`)
     };
 }
