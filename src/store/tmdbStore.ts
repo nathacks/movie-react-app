@@ -2,8 +2,12 @@ import { create } from 'zustand';
 import { Genre, Page } from '../models/tmdb.model.ts';
 import { MAX_MOVIES } from '../utils/movie-dimensions.ts';
 
+export type CategorieType = 'popular' | 'now_playing' | 'top_rated' | 'upcoming'
+
 interface MoviesStoreSlice {
     pages: Page[];
+    categorieId: CategorieType
+    changeCategorieId: (categorieId: CategorieType) => void;
     setMoviePages: (newMoviePage: Page) => void;
     clearPages: () => void;
     genresMovie: Genre[]
@@ -14,6 +18,11 @@ interface MoviesStoreSlice {
 export const useTmdbStore = create<MoviesStoreSlice>((set, get) => ({
     pages: [],
     genresMovie: [],
+    categorieId: 'now_playing',
+
+    changeCategorieId: (categorieId) => {
+        set({ categorieId })
+    },
 
     setGenresMovie: (genresMovie) => {
         set({ genresMovie })

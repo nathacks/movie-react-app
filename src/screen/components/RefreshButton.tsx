@@ -8,7 +8,7 @@ import { SEACHBAR_HEIGHT, SEACHBAR_WIDTH } from '../../utils/searchBar-dimension
 const AnimatedRefreshCw = Animated.createAnimatedComponent(RefreshCw)
 
 export function RefreshButton() {
-    const { replaceAllPages } = useTmdbStore();
+    const { replaceAllPages, categorieId } = useTmdbStore();
     const { getMovies } = useMovie();
 
     const rotation = useSharedValue(0);
@@ -16,7 +16,7 @@ export function RefreshButton() {
     const handleRefresh = () => {
         rotation.value = withTiming(rotation.value + 360, { duration: 1000 });
 
-        getMovies(1).consume({
+        getMovies(1, categorieId).consume({
             result: (moviesRes) => {
                 replaceAllPages(moviesRes)
             }
@@ -28,7 +28,7 @@ export function RefreshButton() {
     }));
 
     return (
-        <Pressable onPress={handleRefresh} className={'items-center justify-center rounded-full bg-sand-1'}
+        <Pressable onPress={handleRefresh} className={'items-center justify-center rounded-full bg-sand-1 z-10'}
                    style={{ width: SEACHBAR_WIDTH, height: SEACHBAR_HEIGHT }}>
             <AnimatedRefreshCw style={animatedIconRotation} color={'black'} />
         </Pressable>

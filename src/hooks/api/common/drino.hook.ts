@@ -10,20 +10,14 @@ interface DrinoHookConfig {
 }
 
 export function useDrino(config: DrinoHookConfig = {}) {
-    const { selectedLocale } = useLanguageStore();
+    const { selectedLocale, selectedLanguage } = useLanguageStore();
 
     const {} = config;
 
     return drino.create({
         baseUrl: BACKEND_URL,
         requestsConfig: {
-            queryParams: { api_key: API_KEY, language: selectedLocale }
+            queryParams: { api_key: API_KEY, language: selectedLocale, region: selectedLanguage }
         },
-        interceptors: {
-            beforeError: (e) => {
-                console.log(e)
-            }
-        }
-
     });
 }
