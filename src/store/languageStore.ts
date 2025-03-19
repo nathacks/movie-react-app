@@ -1,7 +1,5 @@
 import i18n from 'i18next';
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { createMmkvStorage } from './mmkv-storage.ts';
 import * as RNLocalize from 'react-native-localize';
 import { Language } from '../models/language.model.ts';
 
@@ -22,21 +20,17 @@ export const languages: Record<string, Language> = {
 const selectedLanguage = RNLocalize.getLocales()[0].languageCode
 const selectedLocale = RNLocalize.getLocales()[0].languageTag
 
-export const useLanguageStore: LanguageStore = create<LanguageStoreSlice, [['zustand/persist', LanguageStoreSlice]]>(
-    persist((set) => ({
-            selectedLocale,
-            selectedLanguage,
-            isLanguageLoading: false,
-            setLanguage: async ({ lang, locale }: Language) => {
-                set({ isLanguageLoading: true });
-                await i18n.changeLanguage(lang);
-                set({ selectedLanguage: lang, selectedLocale: locale, isLanguageLoading: false });
-            },
-        }),
-        {
-            name: 'mmkv.languageStore',
-            storage: createMmkvStorage('mmkv.languageStore'),
-        },
-    ),
-);
+export const useLanguageStore: LanguageStore = create<LanguageStoreSlice>((set) => ({
+    selectedLocale,
+    selectedLanguage,
+    isLanguageLoading: false,
+    setLanguage: async ({ lang, locale }: Language) => {
+        set({ isLanguageLoading: true });
+        await i18n.changeLanguage(lang);
+        set({ selectedLanguage: lang, selectedLocale: locale, isLanguageLoading: false });
+    },
+}))
+
+
+
 

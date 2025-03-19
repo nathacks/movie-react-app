@@ -16,7 +16,6 @@ export function Header() {
                   marginTop: top,
                   gap: SEARCHBAR_GAP,
               }]}>
-            {/*<BackgroundBlur />*/}
             <CategorieButton />
             <SearchBar />
             <RefreshButton />
