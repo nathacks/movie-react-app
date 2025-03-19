@@ -1,6 +1,7 @@
 import drino from 'drino';
-import { API_KEY, MOVIE_DB_URL } from '../../../../app.config';
 import { useLanguageStore } from '../../../store/languageStore.ts';
+
+import { API_KEY, MOVIE_DB_URL } from 'react-native-dotenv'
 
 interface DrinoHookConfig {
     prefix?: string;
