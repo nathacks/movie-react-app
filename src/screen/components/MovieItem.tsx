@@ -1,15 +1,15 @@
-import { Dimensions, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { MOVIE_SIZE, NO_MOVIE_SIZE } from '../../utils/movie-dimensions.ts';
-import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import { Movie } from '../../models/tmdb.model.ts';
 import { movieItemAnimated } from '../../hooks/animated/movieItem.animated.ts';
-import { memo, useState } from 'react';
 import { StyleShadow } from '../../constants/shadow.ts';
 import FastImage from 'react-native-fast-image';
 import { getImagePath } from '../../utils/url-image.ts';
 import { Rating } from './Rating.tsx';
-import { useMovie } from '../../hooks/api/useMovie.ts';
 import { Genres } from './Genres.tsx';
+import { useTmdbStore } from '../../store/tmdbStore.ts';
+import { memo } from 'react';
 
 interface MovieItemProps {
     movie: Movie
@@ -24,34 +24,24 @@ const backgroundPlacement: Record<number, string> = {
     2: 'bg-bronze-7',
 };
 
-const { width, height } = Dimensions.get('window')
-
-
 export const MovieItem = memo(({ movie, index, scrollX, moviesLengthMax }: MovieItemProps) => {
         const { animatedMovieText, animatedMoviePosition } = movieItemAnimated(index, scrollX);
-        const [showDetail, setShowDetail] = useState(false);
-        const { getDetailsMovie } = useMovie();
+        const { setShowDetailId, showDetailId } = useTmdbStore()
 
-        // SharedValue pour animer la disposition
-        const titleLayout = useSharedValue(0); // 0: column, 1: row
-
-        const animatedTitleStyle = useAnimatedStyle(() => ({
-            flexDirection: titleLayout.value === 0 ? 'column' : 'row',
-            alignItems: titleLayout.value === 0 ? 'center' : 'flex-start',
-        }));
+        const isMovieId = showDetailId === movie.id
 
         const handlePress = () => {
-            console.log('aze')
-            titleLayout.value = withTiming(titleLayout.value === 0 ? 1 : 0, { duration: 500 });
+            setShowDetailId(isMovieId ? null : movie.id)
         };
 
         return (
-            <View className={'flex-1 pt-36'} style={{
+            <Animated.View className={'flex-1 pt-36'} style={{
                 width: MOVIE_SIZE,
                 marginLeft: index === 0 ? NO_MOVIE_SIZE : 0,
                 marginRight: index === moviesLengthMax ? NO_MOVIE_SIZE : 0,
             }}>
                 <Animated.ScrollView
+                    scrollEnabled={isMovieId}
                     showsVerticalScrollIndicator={false}
                     className={'rounded-t-3xl'}
                     style={[animatedMoviePosition]}
@@ -78,18 +68,15 @@ export const MovieItem = memo(({ movie, index, scrollX, moviesLengthMax }: Movie
                             resizeMode={FastImage.resizeMode.cover}
                         />
                         <Animated.View className={'flex-col items-center gap-3'} style={animatedMovieText}>
-                            {/* Animation pour le titre */}
-                            <Animated.View style={[animatedTitleStyle]}>
-                                <Text className={'text-center font-semibold text-2xl'}>{movie.title}</Text>
-                            </Animated.View>
+                            <Text className={'text-center font-semibold text-2xl'}>{movie.title}</Text>
                             <Rating rating={movie.vote_average} />
                             <Genres genreIds={movie.genre_ids} />
                             <Text numberOfLines={5}>{movie.overview}</Text>
                         </Animated.View>
                     </Pressable>
                 </Animated.ScrollView>
-            </View>
-        );
+            </Animated.View>
+        )
     }, (prevProps, nextProps) =>
         prevProps.movie.id === nextProps.movie.id &&
         prevProps.index === nextProps.index &&

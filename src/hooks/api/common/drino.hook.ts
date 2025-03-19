@@ -1,5 +1,5 @@
 import drino from 'drino';
-import { API_KEY, BACKEND_URL } from '../../../../app.config';
+import { API_KEY, MOVIE_DB_URL } from '../../../../app.config';
 import { useLanguageStore } from '../../../store/languageStore.ts';
 
 interface DrinoHookConfig {
@@ -15,7 +15,7 @@ export function useDrino(config: DrinoHookConfig = {}) {
     const {} = config;
 
     return drino.create({
-        baseUrl: BACKEND_URL,
+        baseUrl: MOVIE_DB_URL,
         requestsConfig: {
             queryParams: { api_key: API_KEY, language: selectedLocale, region: selectedLanguage }
         },

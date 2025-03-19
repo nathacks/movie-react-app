@@ -10,8 +10,8 @@ interface GetMoviesPage {
 
 
 export function getMoviesAction() {
-    const { getMovies, getGenres, getSearchMovies } = useMovie();
-    const { setMoviePages, categorieId, replaceAllPages, setGenresMovie } = useTmdbStore();
+    const { getMovies, getSearchMovies } = useMovie();
+    const { setMoviePages, categorieId, replaceAllPages } = useTmdbStore();
 
     const getMoviesPage = ({ pageNumber, requiresClearPage }: GetMoviesPage) => {
         getMovies(pageNumber, categorieId).consume({

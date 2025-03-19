@@ -20,7 +20,6 @@ export function Main() {
     const scrollX = useSharedValue(0);
     const moviesFlat = pages.flatMap((page) => page.results);
 
-
     useEffect(() => {
         getMoviesPage({ pageNumber: 1, requiresClearPage: true });
     }, [categorieId]);
@@ -76,19 +75,12 @@ export function Main() {
                 onScroll={scrollHandler}
                 renderToHardwareTextureAndroid
                 scrollEventThrottle={16}
-                initialNumToRender={3}
-                maxToRenderPerBatch={5}
-                windowSize={10}
-                removeClippedSubviews
                 getItemLayout={(_, index) => ({
                     length: MOVIE_SIZE,
                     offset: GAP_ITEM * index,
                     index,
                 })}
                 onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={{
-                    itemVisiblePercentThreshold: 100, // L'élément doit être 100 % visible
-                }}
                 renderItem={renderItem}
             />
         </View>

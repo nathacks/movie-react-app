@@ -13,12 +13,20 @@ interface MoviesStoreSlice {
     genresMovie: Genre[]
     setGenresMovie: (genresMovie: Genre[]) => void;
     replaceAllPages: (moviePage: Page) => void;
+
+    showDetailId: number | null
+    setShowDetailId: (showDetailId: number | null) => void;
 }
 
 export const useTmdbStore = create<MoviesStoreSlice>((set, get) => ({
     pages: [],
     genresMovie: [],
     categorieId: 'now_playing',
+
+    showDetailId: null,
+    setShowDetailId: (showDetailId) => {
+        set({ showDetailId });
+    },
 
     changeCategorieId: (categorieId) => {
         set({ categorieId })
